@@ -1,72 +1,81 @@
 #include "player.h"
 #include <SFML/Graphics.hpp>
+#include <iostream>
 #include <cmath>
 
 Player::Player(float x, float y)
 {
-    position = {x,y};
+    position = {x, y};
 }
 
-void Player::cameraControls(float deltaTime, sf::Vector2f& cameraPlane)
+void Player::cameraControls(float deltaTime, sf::Vector2f &cameraPlane)
 {
 
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Left)) {
-            float cosTheta = cos(rotationSpeed * deltaTime);
-            float sinTheta = sin(rotationSpeed * deltaTime);
-            float oldDirX = direction.x;
+    // counterclockwise rotation matrix:
 
-            direction.x = direction.x * cosTheta - direction.y * sinTheta;
-            direction.y = oldDirX * sinTheta + direction.y * cosTheta;
+    // $$R = \begin{bmatrix}\ \cos{\theta}\ -\sin{\theta}\\ \sin{\theta} \ \cos{\theta} \\\end{bmatrix}$$
 
-            float oldPlaneX = cameraPlane.x;
-            cameraPlane.x = cameraPlane.x*cosTheta - cameraPlane.y * sinTheta;
-            cameraPlane.y = oldPlaneX*sinTheta + cameraPlane.y *cosTheta;
+    // and then to do it clockwise, make theta negative?
+    // vector multiplication is weird. i jus got this code from chatgpt but yh fr
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Left))
+    {
+        float cosTheta = cos(rotationSpeed * deltaTime);
+        float sinTheta = sin(rotationSpeed * deltaTime);
+        float oldDirX = direction.x;
 
-        }
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Right)) {
-            float cosTheta = cos(-rotationSpeed  * deltaTime);
-            float sinTheta = sin(-rotationSpeed  * deltaTime);
-            float oldDirX = direction.x;
+        direction.x = direction.x * cosTheta - direction.y * sinTheta;
+        direction.y = oldDirX * sinTheta + direction.y * cosTheta;
 
-            direction.x = direction.x * cosTheta - direction.y * sinTheta;
-            direction.y = oldDirX * sinTheta + direction.y * cosTheta;
+        float oldPlaneX = cameraPlane.x;
+        cameraPlane.x = cameraPlane.x * cosTheta - cameraPlane.y * sinTheta;
+        cameraPlane.y = oldPlaneX * sinTheta + cameraPlane.y * cosTheta;
+    }
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Right))
+    {
+        float cosTheta = cos(-rotationSpeed * deltaTime);
+        float sinTheta = sin(-rotationSpeed * deltaTime);
+        float oldDirX = direction.x;
 
-            float oldPlaneX = cameraPlane.x;
-            cameraPlane.x = cameraPlane.x*cosTheta - cameraPlane.y * sinTheta;
-            cameraPlane.y = oldPlaneX*sinTheta + cameraPlane.y *cosTheta;
+        direction.x = direction.x * cosTheta - direction.y * sinTheta;
+        direction.y = oldDirX * sinTheta + direction.y * cosTheta;
 
-        }
+        float oldPlaneX = cameraPlane.x;
+        cameraPlane.x = cameraPlane.x * cosTheta - cameraPlane.y * sinTheta;
+        cameraPlane.y = oldPlaneX * sinTheta + cameraPlane.y * cosTheta;
+    }
 }
 
-sf::Vector2f Player::movement(float deltaTime)
+void Player::movement(float deltaTime)
 {
-        
-        if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W)) {
-            velocity =direction*movementSpeed*deltaTime;
-        }
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S)) {
-            velocity = -direction * movementSpeed * deltaTime;
-        }
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A)) {
-            sf::Vector2f leftStrafe = sf::Vector2f(-direction.y, direction.x);
-            velocity = leftStrafe *  movementSpeed * deltaTime;
 
-        }
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D)) {
-            sf::Vector2f rightStrafe = sf::Vector2f(direction.y, -direction.x);
-            velocity = rightStrafe * movementSpeed * deltaTime;
-        }
-        sf::Vector2f projectedPosition = position + velocity;
-        return projectedPosition;
-        
-        
+    velocity = {0.f, 0.f};
+
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W))
+    {
+        velocity = direction * movementSpeed * deltaTime;
+    }
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S))
+    {
+        velocity = -direction * movementSpeed * deltaTime;
+    }
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A))
+    {
+        sf::Vector2f leftStrafe = sf::Vector2f(-direction.y, direction.x);
+        velocity = leftStrafe * movementSpeed * deltaTime;
+    }
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D))
+    {
+        sf::Vector2f rightStrafe = sf::Vector2f(direction.y, -direction.x);
+        velocity = rightStrafe * movementSpeed * deltaTime;
+    }
+    projectedPosition = position + velocity;
 }
 
-sf::Vector2f Player::getPosition() const
+sf::Vector2f Player::getProjectedPosition()
 {
-    return position;
+    return projectedPosition;
 }
-sf::Vector2f Player::getDirection() const
+sf::Vector2f Player::getDirection()
 {
     return direction;
 }
