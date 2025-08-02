@@ -12,6 +12,8 @@ FetchContent_Declare(SFML
     SYSTEM)
 FetchContent_MakeAvailable(SFML)
 
-add_executable(raycaster src/main.cpp)
+add_executable(raycaster
+ src/main.cpp
+ src/player.cpp)
 target_compile_features(raycaster PRIVATE cxx_std_17)
 target_link_libraries(raycaster PRIVATE SFML::Graphics)
