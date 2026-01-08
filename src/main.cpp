@@ -173,14 +173,7 @@ int main()
                 }
             }
 
-
-
-
-            
-
-
-
-
+        
             float wallX; // exact place the ray hit the wall ig
             if (!sideThatRayHit)
                 wallX = player.position.y + distanceToWall * rayDirection.y;
